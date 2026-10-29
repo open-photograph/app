@@ -18,11 +18,11 @@ env.read_env(
 )
 
 DEBUG = env.bool(
-    var="DJANGO_DEBUG",
+    var="DEBUG",
     default=True,
 )
 
-SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY")
 
 ROOT_URLCONF = "config.urls"
 
@@ -35,7 +35,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # HOSTS
 # -----------------------------------------------------------------------------
 ALLOWED_HOSTS = env(
-    var="DJANGO_ALLOWED_HOSTS",
+    var="ALLOWED_HOSTS",
     cast=list,
     default=[],
 )
@@ -56,7 +56,7 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CORS_ALLOWED_ORIGINS = env(
-    var="DJANGO_CORS_ALLOWED_ORIGINS",
+    var="CORS_ALLOWED_ORIGINS",
     cast=list,
     default=[FRONTEND_URL],
 )
@@ -68,10 +68,10 @@ CORS_ALLOWED_ORIGINS = env(
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = env.bool("DJANGO_CSRF_COOKIE_SECURE", default=not DEBUG)
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=not DEBUG)
 
 CSRF_TRUSTED_ORIGINS = env(
-    var="DJANGO_CSRF_TRUSTED_ORIGINS",
+    var="CSRF_TRUSTED_ORIGINS",
     cast=list,
     default=[FRONTEND_URL],
 )
@@ -83,7 +83,7 @@ CSRF_TRUSTED_ORIGINS = env(
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_NAME = "sessionid"
-SESSION_COOKIE_SECURE = env.bool("DJANGO_SESSION_COOKIE_SECURE", default=not DEBUG)
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=not DEBUG)
 
 SESSION_CACHE_ALIAS = "default"
 
@@ -91,7 +91,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=not DEBUG)
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=not DEBUG)
 SECURE_REDIRECT_EXEMPT = [r"^api/health/$"]
 
 

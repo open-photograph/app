@@ -44,6 +44,11 @@ ALLOWED_HOSTS = env(
 # -----------------------------------------------------------------------------
 # CORS
 # -----------------------------------------------------------------------------
+FRONTEND_URL = env(
+    var="FRONTEND_URL",
+    default="http://localhost:5173",
+)
+
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
@@ -53,12 +58,7 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_ORIGINS = env(
     var="DJANGO_CORS_ALLOWED_ORIGINS",
     cast=list,
-    default=[],
-)
-
-FRONTEND_URL = env(
-    var="FRONTEND_URL",
-    default="http://localhost:5174",
+    default=[FRONTEND_URL],
 )
 
 
@@ -73,7 +73,7 @@ CSRF_COOKIE_SECURE = env.bool("DJANGO_CSRF_COOKIE_SECURE", default=not DEBUG)
 CSRF_TRUSTED_ORIGINS = env(
     var="DJANGO_CSRF_TRUSTED_ORIGINS",
     cast=list,
-    default=[],
+    default=[FRONTEND_URL],
 )
 
 
@@ -165,16 +165,17 @@ INSTALLED_APPS = [
     # -------------------------------------------------------------------------
     # App Domains
     # -------------------------------------------------------------------------
-    "app.domains.client",
-    "app.domains.setup",
-    "app.domains.gallery",
-    "app.domains.commerce",
-    "app.domains.photographer",
+    "apps.domains.client",
+    "apps.domains.setup",
+    "apps.domains.gallery",
+    "apps.domains.commerce",
+    "apps.domains.photographer",
+    "apps.domains.contract",
     # -------------------------------------------------------------------------
     # App Common
     # -------------------------------------------------------------------------
-    "app.common.websocket",
-    "app.common.streaming",
+    "apps.common.websocket",
+    "apps.common.streaming",
 ]
 
 
@@ -325,8 +326,6 @@ TASKS = {
 STATIC_URL = "/api/static/"
 STATIC_ROOT = BASE_DIR / "static"
 
-FRONTEND_ROOT = BASE_DIR / "frontend"
-WHITENOISE_ROOT = BASE_DIR / "frontend"
 
 # -----------------------------------------------------------------------------
 # MEDIA
@@ -550,3 +549,7 @@ STORAGES = {
 }
 
 STORAGES["default"] = STORAGES[SYSTEM_STORAGE_PROVIDER].copy()
+
+# Signature provider credentials are configured only on the server.
+ZAPSIGN_API_TOKEN = env("ZAPSIGN_API_TOKEN", default="")
+ZAPSIGN_SANDBOX_API_TOKEN = env("ZAPSIGN_SANDBOX_API_TOKEN", default="")

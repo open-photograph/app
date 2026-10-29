@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
+import { signatureAdminRoutes } from '../signature/routes'
 import AdminLayout from './layouts/admin-layout.vue'
 
 export const adminRoutes: RouteRecordRaw[] = [
@@ -23,6 +24,32 @@ export const adminRoutes: RouteRecordRaw[] = [
     component: AdminLayout,
     redirect: '/admin/galleries',
     children: [
+      ...signatureAdminRoutes,
+      {
+        path: 'contracts',
+        name: 'admin.contracts',
+        component: () => import('./pages/contracts/index.vue'),
+      },
+      {
+        path: 'contracts/templates',
+        name: 'admin.contracts.templates',
+        component: () => import('./pages/contracts/templates.vue'),
+      },
+      {
+        path: 'contracts/templates/new',
+        name: 'admin.contracts.templates.new',
+        component: () => import('./pages/contracts/template-editor.vue'),
+      },
+      {
+        path: 'contracts/templates/:templateId',
+        name: 'admin.contracts.templates.edit',
+        component: () => import('./pages/contracts/template-editor.vue'),
+      },
+      {
+        path: 'contracts/:contractId',
+        name: 'admin.contracts.detail',
+        component: () => import('./pages/contracts/detail.vue'),
+      },
       {
         path: 'tags',
         name: 'admin.tags',

@@ -1,0 +1,62 @@
+# syntax=docker/dockerfile:1
+
+ARG PYTHON_VERSION=3.13
+ARG UV_VERSION=0.12.22
+
+# ──────────────────────────────────────────────────────────────
+# Stage: uv (binário do uv)
+# ──────────────────────────────────────────────────────────────
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
+
+# ──────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────
+FROM python:${PYTHON_VERSION}-slim-bookworm AS python-base
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH"
+WORKDIR /app
+
+# ──────────────────────────────────────────────────────────────
+# Stage: backend-deps (somente a virtualenv vai para o runtime)
+# ──────────────────────────────────────────────────────────────
+FROM python-base AS backend-deps
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_PYTHON_DOWNLOADS=0 \
+    UV_LINK_MODE=copy
+
+COPY --from=uv /uv /usr/local/bin/uv
+
+COPY apps/api/pyproject.toml apps/api/uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev --no-install-project
+
+# ──────────────────────────────────────────────────────────────
+# Stage: runtime
+# ──────────────────────────────────────────────────────────────
+FROM python-base AS runtime
+
+# Usuário não-root e diretórios graváveis
+RUN groupadd --gid 10001 open-photograph \
+    && useradd --uid 10001 --gid open-photograph --create-home open-photograph \
+    && mkdir -p /app/static /app/media \
+    && chown open-photograph:open-photograph /app/static /app/media
+
+# Dependências Python
+COPY --from=backend-deps /opt/venv /opt/venv
+
+# Script de start (menos mutável que o código, fica antes dele)
+COPY apps/api/docker/start-web.sh /usr/local/bin/start-web
+RUN sed -i 's/\r$//' /usr/local/bin/start-web \
+    && chmod +x /usr/local/bin/start-web
+
+# Código do backend
+COPY apps/api/manage.py ./
+COPY apps/api/config/ config/
+COPY apps/api/apps/ apps/
+COPY apps/api/locale/ locale/
+COPY apps/api/shared/ shared/
+
+
+USER open-photograph
+EXPOSE 8000
+CMD ["start-web"]

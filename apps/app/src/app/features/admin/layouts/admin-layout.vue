@@ -21,6 +21,11 @@ const navItems = computed<NavigationMenuItem[][]>(() => [
       to: "/admin/galleries",
     },
     {
+      label: "Contratos",
+      icon: "i-lucide-file-signature",
+      to: "/admin/contracts",
+    },
+    {
       label: "Tags",
       icon: "i-lucide-tags",
       to: "/admin/tags",
@@ -47,6 +52,11 @@ const navItems = computed<NavigationMenuItem[][]>(() => [
       to: "/admin/settings/previews",
     },
 
+    {
+      label: "Assinaturas",
+      icon: "i-lucide-pen-line",
+      to: "/admin/settings/signatures",
+    },
     {
       label: "Pagamento",
       icon: "i-lucide-credit-card",

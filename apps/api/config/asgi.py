@@ -6,7 +6,7 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 from django.urls import re_path
 
-from app.common.websocket.consumers import GlobalConsumer
+from apps.common.websocket.consumers import GlobalConsumer
 
 os.environ.setdefault(
     key="DJANGO_SETTINGS_MODULE",

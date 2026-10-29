@@ -1,0 +1,107 @@
+name: flowwi
+
+x-backend: &backend
+  image: flowwi-backend:local
+  build:
+    context: .
+    dockerfile: apps/api/Dockerfile
+  env_file:
+    - apps/api/.env
+  environment:
+    DATABASE_URL: postgresql://flowwi:flowwi@postgres:5432/flowwi
+    REDIS_URL: redis://redis:6379/0
+    DJANGO_DEBUG: "True"
+    DJANGO_TASKS_BACKEND: django_tasks_rq.RQBackend
+    DJANGO_CSRF_COOKIE_SECURE: "False"
+    DJANGO_SESSION_COOKIE_SECURE: "False"
+    DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend
+    FRONTEND_URL: http://localhost:8080
+    DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost:8080
+    DJANGO_CORS_ALLOWED_ORIGINS: http://localhost:8080
+    PAYMENT_HOST: localhost:8080
+    PAYMENT_USES_SSL: "False"
+    PORT: "8000"
+  volumes:
+    - media:/app/media
+    - static:/app/static
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: flowwi
+      POSTGRES_USER: flowwi
+      POSTGRES_PASSWORD: flowwi
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --appendonly, 'yes']
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    <<: *backend
+    command: [python, manage.py, migrate, --noinput]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    <<: *backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, 'import socket; socket.create_connection(("127.0.0.1", 8000), timeout=3).close()']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  worker:
+    <<: *backend
+    command: [python, manage.py, rqworker, default, --with-scheduler]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/app/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - static:/app/static:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres:
+  redis:
+  media:
+  static:

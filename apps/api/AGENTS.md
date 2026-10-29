@@ -262,3 +262,12 @@ uv run python manage.py rqworker default             # Worker de tasks (Redis)
 3. Adicionar a opção em `app/domains/setup/models.py` (`SetupDrive`).
 4. Registrar no `app/integrations/drive/registry.py`.
 5. Usar nas tasks de gallery referenciando o provider correto pelo `Setup` ativo.
+
+## Contratos (`app/domains/contract`)
+
+Templates Markdown, rascunhos por cliente, geração de links de assinatura e consulta do documento assinado.
+Integrações externas ficam em `app/integrations/signature/`, com interface comum, manifestos e registro de providers.
+Cada fornecedor possui sua própria pasta em `signature/providers/`, incluindo sua factory de credenciais.
+O catálogo e a validação são derivados do registro, sem listas duplicadas no domínio de contratos.
+ZapSign é o primeiro provider, com credenciais exclusivamente no `.env` (`ZAPSIGN_API_TOKEN` e `ZAPSIGN_SANDBOX_API_TOKEN`) e ambientes separados.
+Detalhes de schema, endpoints, configuração e testes em [`README.md`](app/domains/contract/README.md).

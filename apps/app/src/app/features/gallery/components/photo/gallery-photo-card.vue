@@ -4,7 +4,7 @@ import { downloadPhoto } from '@/app/features/gallery/utils/photo.ts'
 import { getSession } from '@/app/shared/services/session'
 import { useMutation } from '@tanstack/vue-query'
 import type { PublicPhoto, Gallery, CreateOrderPayload } from '@/app/features/gallery/types'
-import { galleryFeedbackKey } from '@/app/features/gallery/context/gallery-feedback'
+import { galleryFeedbackKey } from '@/app/features/gallery/constants/feedback'
 
 // ---------------------------------------------------------------------------
 // Contrato do componente

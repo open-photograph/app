@@ -8,11 +8,8 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
-from config.frontend import frontend
-from config.health import health
 
 urlpatterns = [
-    path("api/health/", health, name="health"),
     # -------------------------------------------------------------------------
     # Admin
     # -------------------------------------------------------------------------
@@ -45,19 +42,20 @@ urlpatterns = [
                 # -------------------------------------------------------------
                 # App Domains
                 # -------------------------------------------------------------
-                path("", include("app.domains.gallery.urls")),
-                path("", include("app.domains.client.urls")),
-                path("", include("app.domains.setup.urls")),
-                path("", include("app.domains.commerce.urls")),
-                path("", include("app.domains.photographer.urls")),
+                path("", include("apps.domains.gallery.urls")),
+                path("", include("apps.domains.client.urls")),
+                path("", include("apps.domains.setup.urls")),
+                path("", include("apps.domains.commerce.urls")),
+                path("", include("apps.domains.photographer.urls")),
+                path("", include("apps.domains.contract.urls")),
                 # -------------------------------------------------------------
                 # Apps Integrations
                 # -------------------------------------------------------------
-                path("", include("app.integrations.drive.urls")),
+                path("", include("apps.integrations.drive.urls")),
                 # -------------------------------------------------------------
                 # Apps Streaming
                 # -------------------------------------------------------------
-                path("", include("app.common.streaming.urls"), name="streaming"),
+                path("", include("apps.common.streaming.urls"), name="streaming"),
             ]
         ),
     ),
@@ -67,5 +65,3 @@ if settings.SYSTEM_STORAGE_PROVIDER == "local":
     urlpatterns += [
         re_path(r"^api/media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     ]
-
-urlpatterns += [re_path(r"^(?!api(?:/|$)|assets(?:/|$)).*$", frontend, name="frontend")]

@@ -1,71 +1,71 @@
 <script setup lang="ts">
-import type { RecentSale, SalesSummary, SeriesPoint } from '@/app/features/admin/types/sales'
-import { useQuery } from '@tanstack/vue-query'
-import type { TableColumn } from '@nuxt/ui'
-import { apiFetch } from '@/app/core/clients/api'
+import type { RecentSale, SalesSummary, SeriesPoint } from "@/app/features/admin/types/sales";
+import { useQuery } from "@tanstack/vue-query";
+import type { TableColumn } from "@nuxt/ui";
+import { apiFetch } from "@/app/core/clients/api";
 
 // ---------------------------------------------------------------------------
 // Contrato do componente
 // ---------------------------------------------------------------------------
-defineOptions({ name: 'AdminSalesPage' })
+defineOptions({ name: "AdminSalesPage" });
 
 // ---------------------------------------------------------------------------
 // Constantes
 // ---------------------------------------------------------------------------
-const LOCALE = 'pt-BR'
-const DEFAULT_CURRENCY = 'BRL'
-const DEFAULT_DAYS = 30
-const REFETCH_INTERVAL = 60_000
-const METRIC_SKELETON_COUNT = 3
-const ORDER_ID_PREVIEW_LENGTH = 8
+const LOCALE = "pt-BR";
+const DEFAULT_CURRENCY = "BRL";
+const DEFAULT_DAYS = 30;
+const REFETCH_INTERVAL = 60_000;
+const METRIC_SKELETON_COUNT = 3;
+const ORDER_ID_PREVIEW_LENGTH = 8;
 const periods = [
-  { label: 'Últimos 7 dias', value: 7 },
-  { label: 'Últimos 30 dias', value: 30 },
-  { label: 'Últimos 90 dias', value: 90 },
-]
-const providerLabels: Record<string, string> = { stripe: 'Stripe', mercado_pago: 'Mercado Pago' }
+  { label: "Últimos 7 dias", value: 7 },
+  { label: "Últimos 30 dias", value: 30 },
+  { label: "Últimos 90 dias", value: 90 },
+];
+const providerLabels: Record<string, string> = { stripe: "Stripe", mercado_pago: "Mercado Pago" };
 const columns: TableColumn<RecentSale>[] = [
-  { accessorKey: 'client_name', header: 'Cliente' },
-  { accessorKey: 'id', header: 'Pedido' },
-  { accessorKey: 'paid_at', header: 'Pagamento' },
-  { accessorKey: 'payment_provider', header: 'Provedor' },
-  { accessorKey: 'total', header: 'Valor' },
-]
-const revenueCategories = [{ key: 'revenue' as const, label: 'Receita', color: 'neutral' }]
-const countCategories = [{ key: 'count' as const, label: 'Vendas', color: 'neutral' }]
-const dateFormatter = new Intl.DateTimeFormat(LOCALE, { day: '2-digit', month: 'short' })
+  { accessorKey: "client_name", header: "Cliente" },
+  { accessorKey: "id", header: "Pedido" },
+  { accessorKey: "paid_at", header: "Pagamento" },
+  { accessorKey: "payment_provider", header: "Provedor" },
+  { accessorKey: "total", header: "Valor" },
+];
+const revenueCategories = [{ key: "revenue" as const, label: "Receita", color: "neutral" }];
+const countCategories = [{ key: "count" as const, label: "Vendas", color: "neutral" }];
+const dateFormatter = new Intl.DateTimeFormat(LOCALE, { day: "2-digit", month: "short" });
 const paidDateFormatter = new Intl.DateTimeFormat(LOCALE, {
-  dateStyle: 'short',
-  timeStyle: 'short',
-})
-const countFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 })
+  dateStyle: "short",
+  timeStyle: "short",
+});
+const countFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 });
 
 // ---------------------------------------------------------------------------
 // Estado
 // ---------------------------------------------------------------------------
-const days = ref(DEFAULT_DAYS)
-const currency = ref<string>()
+const days = ref(DEFAULT_DAYS);
+const currency = ref<string>();
 
 // ---------------------------------------------------------------------------
 // Queries
 // ---------------------------------------------------------------------------
 const { data, isPending, isError, isFetching, refetch } = useQuery({
-  queryKey: ['admin-sales', days, currency],
+  queryKey: ["admin-sales", days, currency],
   queryFn: fetchSales,
   refetchInterval: REFETCH_INTERVAL,
-})
+});
 
 // ---------------------------------------------------------------------------
 // Constantes
 // ---------------------------------------------------------------------------
-const retryActions = [{ label: 'Tentar novamente', onClick: retry }]
+const retryActions = [{ label: "Tentar novamente", onClick: retry }];
 
 // ---------------------------------------------------------------------------
 // Computed
 // ---------------------------------------------------------------------------
-const chartData = computed(getChartData)
-const metrics = computed(getMetrics)
-const showCurrencySelect = computed(getShowCurrencySelect)
+const chartData = computed(getChartData);
+const metrics = computed(getMetrics);
+const showCurrencySelect = computed(getShowCurrencySelect);
 
 // ---------------------------------------------------------------------------
 // Funções
@@ -73,25 +73,25 @@ const showCurrencySelect = computed(getShowCurrencySelect)
 
 function money(value: number | string) {
   return new Intl.NumberFormat(LOCALE, {
-    style: 'currency',
+    style: "currency",
     currency: data.value?.currency ?? DEFAULT_CURRENCY,
-  }).format(Number(value))
+  }).format(Number(value));
 }
 
 function countFormat(value: number) {
-  return countFormatter.format(value)
+  return countFormatter.format(value);
 }
 
 function paidDate(value: string) {
-  return paidDateFormatter.format(new Date(value))
+  return paidDateFormatter.format(new Date(value));
 }
 
 function shortOrderId(id: string) {
-  return id.slice(0, ORDER_ID_PREVIEW_LENGTH)
+  return id.slice(0, ORDER_ID_PREVIEW_LENGTH);
 }
 
 function providerLabel(provider: string) {
-  return providerLabels[provider] ?? provider
+  return providerLabels[provider] ?? provider;
 }
 
 function toChartPoint(point: SeriesPoint) {
@@ -99,11 +99,11 @@ function toChartPoint(point: SeriesPoint) {
     date: dateFormatter.format(new Date(`${point.date}T12:00:00`)),
     count: point.count,
     revenue: Number(point.revenue),
-  }
+  };
 }
 
 function selectCurrency(value: string) {
-  currency.value = value
+  currency.value = value;
 }
 
 // ---------------------------------------------------------------------------
@@ -111,22 +111,22 @@ function selectCurrency(value: string) {
 // ---------------------------------------------------------------------------
 
 function getChartData() {
-  const series = data.value?.series ?? []
-  const points = []
-  for (const point of series) points.push(toChartPoint(point))
-  return points
+  const series = data.value?.series ?? [];
+  const points = [];
+  for (const point of series) points.push(toChartPoint(point));
+  return points;
 }
 
 function getMetrics() {
   return [
-    { label: 'Vendas pagas', value: String(data.value?.count ?? 0), icon: 'i-lucide-shopping-bag' },
-    { label: 'Receita', value: money(data.value?.revenue ?? 0), icon: 'i-lucide-wallet' },
-    { label: 'Ticket médio', value: money(data.value?.average ?? 0), icon: 'i-lucide-receipt' },
-  ]
+    { label: "Vendas pagas", value: String(data.value?.count ?? 0), icon: "i-lucide-shopping-bag" },
+    { label: "Receita", value: money(data.value?.revenue ?? 0), icon: "i-lucide-wallet" },
+    { label: "Ticket médio", value: money(data.value?.average ?? 0), icon: "i-lucide-receipt" },
+  ];
 }
 
 function getShowCurrencySelect() {
-  return !!data.value && data.value.currencies.length > 1
+  return !!data.value && data.value.currencies.length > 1;
 }
 
 // ---------------------------------------------------------------------------
@@ -134,17 +134,17 @@ function getShowCurrencySelect() {
 // ---------------------------------------------------------------------------
 
 function fetchSales() {
-  return apiFetch<SalesSummary>('/api/commerce/orders/sales/', {
+  return apiFetch<SalesSummary>("/api/commerce/orders/sales/", {
     query: { days: days.value, currency: currency.value },
-  })
+  });
 }
 
 function retry() {
-  refetch()
+  refetch();
 }
 
 function refresh() {
-  refetch()
+  refetch();
 }
 </script>
 

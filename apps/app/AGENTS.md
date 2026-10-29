@@ -113,8 +113,8 @@ Vitrine pública das fotos:
 |----------------------|-------------------------------------------------------------------------------|
 | `pages/slug.vue`     | Carrega galeria por slug, exibe fotos em grid, gerencia acesso com código     |
 | `components/`        | PhotoGrid, PhotoDetail, PhotoBuyButton, GalleryHeader, etc.                   |
-| `context/`           | Contrato tipado do feedback compartilhado via provide/inject                  |
-| `types/`             | `iGallery`, `iPhoto`, `iOrder`                                                |
+| `constants/`         | Chaves de provide/inject para tema e feedback                                |
+| `types/`             | Tipos organizados por contexto, incluindo contratos de feedback              |
 
 **Acesso à galeria** (lógica de visibilidade):
 - `public` → acessível sem login
@@ -269,3 +269,16 @@ pnpm lint           # Lint (oxlint + eslint com --fix)
 pnpm format         # Formatar com oxfmt
 pnpm test:unit      # Testes via Vitest
 ```
+
+## Contratos no admin
+
+- `/admin/contracts`: lista, busca e criação de contratos por cliente/template; o backend seleciona o serviço de assinatura ativo.
+- `/admin/contracts/templates`: templates com `UEditor` + `UEditorToolbar`, conteúdo Markdown.
+- `/admin/contracts/:contractId`: revisão do rascunho, geração/cópia do link, consulta de status e download assinado.
+- `/admin/settings/signatures`: configurações dos providers de assinatura, implementadas em `features/signature/`, com catálogo dinâmico do backend.
+- Tipos organizados em `features/admin/types/contract/` (contrato e template); tipos dos serviços em `features/signature/types/`.
+- Contratos gerados são imutáveis; alterações de templates não modificam contratos existentes.
+
+O frontend não mantém listas, credenciais ou documentação específicas de fornecedores de assinatura.
+As variáveis são descobertas no conteúdo de cada template e retornadas em `variables`/`input_variables`.
+O formulário carrega os campos do template selecionado e envia seus valores em `variables` na criação do contrato.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { galleryFeedbackKey } from '@/app/features/gallery/context/gallery-feedback'
+import { galleryFeedbackKey } from '@/app/features/gallery/constants/feedback'
 import type { Gallery, PublicPhoto } from '@/app/features/gallery/types'
 
 // ---------------------------------------------------------------------------

@@ -136,7 +136,7 @@ class EnvironmentConfigurationTests(SimpleTestCase):
                 "DJANGO_DEBUG": "True",
                 "AWS_ACCESS_KEY_ID": "test-access",
                 "AWS_SECRET_ACCESS_KEY": "test-secret",
-                "AWS_STORAGE_BUCKET_NAME": "test-bucket",
+                "AWS_BUCKET": "test-bucket",
                 "PAYMENT_PROVIDER": "",
             }
         )

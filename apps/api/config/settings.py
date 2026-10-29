@@ -501,9 +501,9 @@ if MERCADO_PAGO_ACCESS_TOKEN:
 # -----------------------------------------------------------------------------
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="")
 AWS_ENDPOINT_URL = env("AWS_ENDPOINT_URL", default="") or None
-AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="us-east-1")
+AWS_REGION = env("AWS_REGION", default="us-east-1")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="")
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="")
+AWS_BUCKET = env("AWS_BUCKET", default="")
 AWS_S3_ADDRESSING_STYLE = env("AWS_S3_ADDRESSING_STYLE", default="virtual")
 
 # -----------------------------------------------------------------------------
@@ -536,8 +536,8 @@ STORAGES = {
             "access_key": AWS_ACCESS_KEY_ID,
             "secret_key": AWS_SECRET_ACCESS_KEY,
             "endpoint_url": AWS_ENDPOINT_URL,
-            "bucket_name": AWS_STORAGE_BUCKET_NAME,
-            "region_name": AWS_S3_REGION_NAME,
+            "bucket_name": AWS_BUCKET,
+            "region_name": AWS_REGION,
         },
     },
     "local": {

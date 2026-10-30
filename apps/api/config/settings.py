@@ -224,20 +224,20 @@ TEMPLATES = [
 # -----------------------------------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = env("EMAIL_PORT", default="")
+EMAIL_HOST = env("EMAIL_HOST", default="")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=not DEBUG)
 EMAIL_USE_SSL = False
 
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="")
 
 # -----------------------------------------------------------------------------
 # Database
 # -----------------------------------------------------------------------------
-DATABASE_URL = env("DATABASE_URL")
+DATABASE_URL = env("DATABASE_URL", default="")
 
 DATABASES = {
     "default": dj_database_url.config(
@@ -261,7 +261,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # -----------------------------------------------------------------------------
 # Redis
 # -----------------------------------------------------------------------------
-REDIS_URL = env("REDIS_URL")
+REDIS_URL = env("REDIS_URL", default="")
 
 # -----------------------------------------------------------------------------
 # RQ
